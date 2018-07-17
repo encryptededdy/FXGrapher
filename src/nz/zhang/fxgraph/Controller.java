@@ -1,6 +1,7 @@
 package nz.zhang.fxgraph;
 
 import javafx.fxml.FXML;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import nz.zhang.graph.Graph;
 import nz.zhang.graph.Node;
@@ -8,7 +9,7 @@ import nz.zhang.graph.Node;
 
 public class Controller {
     @FXML
-    private VBox mainBox;
+    private Pane mainPane;
 
     public void initialize() {
         // sample graph
@@ -31,7 +32,7 @@ public class Controller {
 
         Graph graph = new Graph(a);
 
-        GraphDrawer drawer = new GraphDrawer(mainBox, graph);
+        GraphDrawer drawer = new GraphDrawer(mainPane, graph);
         drawer.drawGraph();
 
         System.out.println("Draw complete!");

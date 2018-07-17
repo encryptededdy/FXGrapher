@@ -3,5 +3,6 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<VBox fx:id="mainBox" alignment="center" minHeight="275.0" minWidth="300.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.1" fx:controller="nz.zhang.fxgraph.Controller">
-</VBox>
+<?import javafx.scene.layout.Pane?>
+<Pane fx:id="mainPane" minHeight="275.0" minWidth="300.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.1" fx:controller="nz.zhang.fxgraph.Controller">
+</Pane>
