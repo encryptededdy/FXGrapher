@@ -1,5 +1,6 @@
 package nz.zhang.fxgraph;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -11,7 +12,8 @@ public class Controller {
     @FXML
     private Pane mainPane;
 
-    public void initialize() {
+    @FXML
+    void loadGraph(ActionEvent event) {
         // sample graph
         Node a = new Node("A", 10);
         Node b = new Node("B", 3);

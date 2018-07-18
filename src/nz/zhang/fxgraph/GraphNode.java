@@ -10,8 +10,13 @@ import javafx.scene.text.Text;
 
 
 public class GraphNode extends Pane {
+
+    private String name;
+
     public GraphNode(String name, Integer cost) {
         super();
+
+        this.name = name;
 
         Circle circle = new Circle();
         circle.setRadius(40);
@@ -27,10 +32,14 @@ public class GraphNode extends Pane {
 
         StackPane stack = new StackPane();
         stack.getChildren().addAll(circle, costLabel, nameLabel);
+        stack.setPadding(new Insets(20));
 
         // set view
         getChildren().add(stack);
 
-        setPadding(new Insets(20));
+    }
+
+    public String getName() {
+        return name;
     }
 }

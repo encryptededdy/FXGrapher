@@ -1,25 +1,26 @@
 package nz.zhang.fxgraph;
 
+import javafx.animation.PauseTransition;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.util.Duration;
 import nz.zhang.graph.Graph;
 import nz.zhang.graph.Node;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class GraphDrawer {
     private Pane parentPane;
+    private Pane backgroundPane = new Pane();
     private VBox vbox = new VBox();
     private Graph graph;
     private Map<Node, GraphNode> visited = new HashMap<>();
@@ -29,14 +30,18 @@ public class GraphDrawer {
         this.graph = graph;
 
         // populate pane
-        parentPane.getChildren().add(vbox);
+        parentPane.getChildren().add(new StackPane(backgroundPane, vbox));
     }
 
     public void drawGraph() {
         HashSet<Node> currentLevel = new HashSet<>();
         currentLevel.add(graph.getTop());
         drawLevel(currentLevel);
-        drawLines();
+
+        // hacky delay
+        PauseTransition pt = new PauseTransition(Duration.seconds(0.1));
+        pt.setOnFinished(event -> drawLines());
+        pt.play();
     }
 
     private void drawLevel(HashSet<Node> currentLevel) {
@@ -55,44 +60,46 @@ public class GraphDrawer {
         if (subLevel.size() > 0) drawLevel(subLevel);
     }
 
-    private void drawLines() {
+    public void drawLines() {
         for (Map.Entry<Node, GraphNode> node : visited.entrySet()) {
             for (Map.Entry<Node, Integer> child : node.getKey().getChildren().entrySet()) {
                 // Draw a line!
                 GraphNode source = node.getValue();
                 GraphNode dest = visited.get(child.getKey());
-                Line line = new Line();
-                line.setStrokeWidth(4);
-                line.setFill(Color.BLACK);
 
                 // get bounds relative to ParentPane, where we'll be drawing the lines
-                Bounds sourceBounds = parentPane.sceneToLocal(source.localToScene(source.getBoundsInLocal()));
-                Bounds destnBounds = parentPane.sceneToLocal(dest.localToScene(dest.getBoundsInLocal()));
+                Bounds sourceBounds = backgroundPane.sceneToLocal(source.localToScene(source.getBoundsInLocal()));
+                Bounds destnBounds = backgroundPane.sceneToLocal(dest.localToScene(dest.getBoundsInLocal()));
 
-                System.out.println(parentPane.layoutBoundsProperty());
-
+                System.out.println("Drawing "+source.getName()+" to "+dest.getName());
                 System.out.println("Drew line from "+sourceBounds+" to "+destnBounds);
+
+                Line line = new Line();
+                //Line line = new Line(sourceBounds.getMaxX(), sourceBounds.getMaxY(), destnBounds.getMaxX(), destnBounds.getMaxY());
+                line.setStrokeWidth(4);
+                line.setStroke(Color.DIMGRAY);
 
                 // ugly code binding X start, end, Y start, end
                 line.startXProperty().bind(Bindings.createDoubleBinding(() -> {
-                    return sourceBounds.getMinX() + source.getWidth()/2;
-                }, parentPane.layoutBoundsProperty()));
+                    return sourceBounds.getMinX() + sourceBounds.getWidth()/2;
+                }, source.layoutBoundsProperty()));
 
                 line.startYProperty().bind(Bindings.createDoubleBinding(() -> {
-                    return sourceBounds.getMinY() + source.getHeight()/2;
-                }, parentPane.layoutBoundsProperty()));
+                    return sourceBounds.getMinY() + sourceBounds.getHeight()/2;
+                }, source.layoutBoundsProperty()));
 
                 line.endXProperty().bind(Bindings.createDoubleBinding(() -> {
-                    return destnBounds.getMinX() + dest.getWidth()/2;
-                }, parentPane.layoutBoundsProperty()));
+                    return destnBounds.getMinX() + destnBounds.getWidth()/2;
+                }, dest.layoutBoundsProperty()));
 
                 line.endYProperty().bind(Bindings.createDoubleBinding(() -> {
-                    return destnBounds.getMinY() + dest.getHeight()/2;
-                }, parentPane.layoutBoundsProperty()));
+                    return destnBounds.getMinY() + destnBounds.getHeight()/2;
+                }, dest.layoutBoundsProperty()));
+
 
                 // TODO: Draw weight... somehow!
 
-                parentPane.getChildren().add(line);
+                backgroundPane.getChildren().add(line);
             }
         }
     }
